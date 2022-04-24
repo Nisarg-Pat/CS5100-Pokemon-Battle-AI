@@ -1,14 +1,20 @@
 import pandas
 
+selections = {"1": "A", "a": "A", "attack": "A", "2": "S", "s": "S", "switch": "S", "3": "I", "i": "I", "info": "I",
+              "quit": "Q"}
+
 
 def move_to_list(s):
     s = s.replace("[", "").replace("]", "")
     s = s.split(", ")
     for i in range(len(s)):
         s[i] = s[i][1:-1]
-        s[i] = s[i].replace("'", " ")
+        s[i] = reformat(s[i])
+
     return s
 
+def reformat(s):
+    return s
 
 def getMultiplier(attackType, defenseTypes):
     multiplier = 1.0

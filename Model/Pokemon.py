@@ -1,5 +1,6 @@
 import random
 
+import Data
 import util
 
 
@@ -15,15 +16,13 @@ class Pokemon:
         self.special_defense = int(df["Special Defense"])
         self.speed = int(df["Speed"])
 
-        self.moves = {}
+        self.moves = []
+        self.allMovesList = []
+        moves = util.move_to_list(df["Moves"])
+        for move in moves:
+            self.allMovesList.append(Data.getMove(move))
 
         self.remainingHP = self.hp
-
-
-    def select_random_attacks(self):
-        # print(util.str_to_list(self.df["Moves"]))
-        move_list = util.move_to_list(self.df["Moves"])
-        self.moves = random.sample(move_list, min(4, len(move_list)))
 
     def getMoves(self):
         return self.moves
