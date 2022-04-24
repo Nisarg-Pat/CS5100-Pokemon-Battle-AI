@@ -1,11 +1,11 @@
 class Move:
     def __init__(self, df):
         self.df = df
-        self.name = df["Name"]
-        self.type = df["Type"]
-        self.category = df["Category"]
-        self.power = df["Power"]
-        self.accuracy = df["Accuracy"]
+        self.name = str(df["Name"])
+        self.type = str(df["Type"])
+        self.category = str(df["Category"])
+        self.power = str(df["Power"])
+        self.accuracy = str(df["Accuracy"])
 
     def __str__(self):
         return self.name

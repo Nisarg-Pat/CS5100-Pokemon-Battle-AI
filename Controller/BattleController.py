@@ -1,4 +1,6 @@
 import util
+from Controller.Attack import Attack
+from Controller.Switch import Switch
 
 
 class BattleController:
@@ -17,16 +19,14 @@ class BattleController:
             print("Turn " + str(self.model.turnNumber))
             print("Your Current Pokemon: " + str(self.model.playerList[0].getCurrentPokemon()))
             print("Opponent's Current Pokemon: " + str(self.model.playerList[1].getCurrentPokemon()))
+            print()
 
             inp = input("Select one of the following: 1.Attack 2.Switch 3.Info: ")
-            inp.lower()
+            inp = inp.lower()
             while inp not in util.selections:
                 inp = input("Select one of the following: 1.Attack 2.Switch 3.Info: ")
             if (util.selections[inp] == 'A'):
-                print("Possible Moves:")
-                i = 1
-                for move in self.model.playerList[0].getCurrentPokemon().moves:
-                    print(str(i) + "." + str(move.name))
-                    i += 1
-                inp = input("Select one of the following: 1.Attack 2.Switch 3.Info: ")
+                Attack(self.model, 0).execute()
+            elif (util.selections[inp] == 'S'):
+                Switch(self.model, 0).execute()
             self.model.gameOver = True

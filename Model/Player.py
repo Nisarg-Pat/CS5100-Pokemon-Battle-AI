@@ -8,6 +8,16 @@ class Player:
     def getCurrentPokemon(self):
         return self.pokemonList[self.currentPokemonIndex]
 
+    def getPokemonList(self):
+        return self.pokemonList
+
+    def getSwitchPokemonList(self):
+        switchList = []
+        for pokemon in self.pokemonList:
+            if pokemon.remainingHP>0:
+                switchList.append(pokemon)
+        return switchList
+
     def getPossibleActions(self):
         actionList = []
         for move in self.getCurrentPokemon().getMoves():

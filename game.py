@@ -1,3 +1,5 @@
+import random
+
 import Data
 from Controller.BattleController import BattleController
 from Model.Model import Model
@@ -6,6 +8,7 @@ from Model.Player import Player
 num_pokemon = 3
 
 if __name__ == '__main__':
+    random.seed("Its 2")
     num_pokemon = 3
     numPlayers = 2
     players = []

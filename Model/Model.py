@@ -7,3 +7,12 @@ class Model:
 
     def isGameOver(self):
         return self.gameOver
+
+    def performAction(self, playerIndex, action, actionIndex):
+        if action == "MOVE":
+            playerPokemon = self.playerList[playerIndex].getCurrentPokemon()
+            opponentPokemon = self.playerList[self.getOpponentIndex(playerIndex)].getCurrentPokemon()
+            playerPokemon.performMove(playerPokemon.moves[actionIndex], opponentPokemon)
+
+    def getOpponentIndex(self, playerIndex):
+        return 1 - playerIndex
