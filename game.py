@@ -2,7 +2,7 @@ import random
 
 import Data
 from Controller.BattleController import BattleController
-from Model.Model import Model
+from Model.BattleModel import Model
 from Model.Player import Player
 
 num_pokemon = 3

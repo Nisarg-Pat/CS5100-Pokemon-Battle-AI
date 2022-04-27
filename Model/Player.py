@@ -12,10 +12,10 @@ class Player:
         return self.pokemonList
 
     def getSwitchPokemonList(self):
-        switchList = []
-        for pokemon in self.pokemonList:
-            if pokemon.remainingHP>0:
-                switchList.append(pokemon)
+        switchList = {}
+        for i in range(len(self.pokemonList)):
+            if self.pokemonList[i].remainingHP > 0 and self.pokemonList[i] != self.getCurrentPokemon():
+                switchList[(i+1)] = self.pokemonList[i]
         return switchList
 
     def getPossibleActions(self):
@@ -26,6 +26,12 @@ class Player:
             if i != self.currentPokemonIndex and self.pokemonList[i].remainingHP > 0:
                 actionList.append("Pokemon " + str(i))
         print(actionList)
+
+    def performAction(self, action, actionIndex, opponentPokemon):
+        if action == "MOVE":
+            self.getCurrentPokemon().performMove(self.getCurrentPokemon().moves[actionIndex], opponentPokemon)
+        elif action == "SWITCH":
+            self.currentPokemonIndex = actionIndex-1
 
     def __str__(self):
         string = ""

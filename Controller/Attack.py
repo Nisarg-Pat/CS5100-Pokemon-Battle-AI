@@ -15,7 +15,6 @@ class Attack:
             # lowerCaseMove = move.name.lower()
             selectionList[move.name.lower()] = i-1
             i += 1
-        print(selectionList)
         inp = input("Select one of possible moves or type Back: ")
         inp = inp.lower()
         while inp not in selectionList:
@@ -23,4 +22,4 @@ class Attack:
         if inp == "back":
             return
         moveIndex = selectionList[inp]
-        self.model.performAction(self.agentIndex, "MOVE", moveIndex)
+        self.model.addAction(self.agentIndex, "MOVE", moveIndex)

@@ -38,7 +38,11 @@ class Pokemon:
             stab = 1.5
         maxDamage = int((0.85*float(move.power)*ad)*multiplier*stab)
         minDamage = int(0.85*maxDamage)
-        print(str(minDamage)+" "+str(maxDamage))
+        print(str(maxDamage)+" "+str(minDamage))
+        opponent.damage(maxDamage)
+
+    def damage(self, val):
+        self.remainingHP = max(self.remainingHP-val, 0)
 
     def __str__(self):
         return self.name + ": " + str(self.remainingHP) + "/" + str(self.hp) + " "+ str(self.moves)

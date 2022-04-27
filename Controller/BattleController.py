@@ -16,17 +16,20 @@ class BattleController:
         print(self.model.playerList[1])
 
         while not self.model.isGameOver():
-            print("Turn " + str(self.model.turnNumber))
-            print("Your Current Pokemon: " + str(self.model.playerList[0].getCurrentPokemon()))
-            print("Opponent's Current Pokemon: " + str(self.model.playerList[1].getCurrentPokemon()))
+            playerIndex = self.model.getCurrentPlayerIndex()
+            print("Turn " + str(self.model.turnNumber)+" Player: "+ str(playerIndex))
+            print("Your Current Pokemon: " + str(self.model.playerList[playerIndex].getCurrentPokemon()))
+            print("Opponent's Current Pokemon: " +
+                  str(self.model.playerList[self.model.getOpponentIndex(playerIndex)].getCurrentPokemon()))
             print()
 
             inp = input("Select one of the following: 1.Attack 2.Switch 3.Info: ")
             inp = inp.lower()
             while inp not in util.selections:
                 inp = input("Select one of the following: 1.Attack 2.Switch 3.Info: ")
-            if (util.selections[inp] == 'A'):
-                Attack(self.model, 0).execute()
-            elif (util.selections[inp] == 'S'):
-                Switch(self.model, 0).execute()
-            self.model.gameOver = True
+            if util.selections[inp] == 'A':
+                Attack(self.model, playerIndex).execute()
+            elif util.selections[inp] == 'S':
+                Switch(self.model, playerIndex).execute()
+            elif util.selections[inp] == 'Q':
+                return
