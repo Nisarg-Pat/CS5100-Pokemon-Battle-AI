@@ -93,5 +93,5 @@ class Model:
                 actions = [(Action.NONE, -1)]
         else:
             actions = self.playerList[playerIndex].getPossibleActions()
-        print(actions)
+        # print(actions)
         return actions

@@ -13,8 +13,7 @@ if __name__ == '__main__':
     numPlayers = 2
     players = []
     playerNames = ["Red", "Blue"]
-    agentTypes = [AgentEnum.ManualAgent, AgentEnum.RandomAgent]
-    random.seed("Nisarg")
+    agentTypes = [AgentEnum.RandomAgent, AgentEnum.RandomAgent]
     for i in range(numPlayers):
         pokemonList = []
         for j in range(num_pokemon):

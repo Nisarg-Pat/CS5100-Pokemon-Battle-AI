@@ -30,7 +30,7 @@ class BattleController:
                 action = RandomAgent(playerIndex).getAction(self.model)
                 if action is not None:
                     self.model.addAction(playerIndex, action)
-            print(self.model.actionList)
+            # print(self.model.actionList)
             print()
 
         if self.model.isGameOver():

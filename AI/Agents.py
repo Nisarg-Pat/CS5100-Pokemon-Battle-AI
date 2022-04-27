@@ -15,9 +15,9 @@ class Agent:
 class RandomAgent(Agent):
     def getAction(self, model):
         actions = model.getLegalActions(self.index)
-        print(actions)
+        # print(actions)
         choice = random.choice(actions)
-        print(choice)
+        # print(choice)
         return choice
 
 
