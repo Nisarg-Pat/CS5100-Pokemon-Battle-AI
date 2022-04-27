@@ -10,6 +10,7 @@ class Model:
         self.turn = 0
         self.actionList = {}
         self.winner = None
+        self.loser = None
 
     def isGameOver(self):
         return self.gameOver
@@ -17,7 +18,6 @@ class Model:
     def addAction(self, playerIndex, action, actionIndex):
         self.actionList[playerIndex] = (action, actionIndex)
         self.turn = self.getOpponentIndex(self.turn)
-        print(self.actionList)
         if len(self.actionList) == 2:
             self.performActions()
 
@@ -26,6 +26,12 @@ class Model:
 
     def getCurrentPlayerIndex(self):
         return self.turn
+
+    def requireSwitching(self):
+        if self.playerList[0].getCurrentPokemon().remainingHP == 0:
+            return True
+        if self.playerList[1].getCurrentPokemon().remainingHP == 0:
+            return True
 
     def performActions(self):
         if len(self.actionList) != 2:
@@ -37,8 +43,6 @@ class Model:
             action, actionIndex = self.actionList[playerIndex]
             if action == "SWITCH":
                 self.playerList[playerIndex].performAction(action, actionIndex, None)
-                print("Player: " + str(playerIndex) + "Switched to : " + str(
-                    self.playerList[playerIndex].getCurrentPokemon()))
             elif action == "MOVE":
                 countMove += 1
             currentPokemon[playerIndex] = self.playerList[playerIndex].getCurrentPokemon()
@@ -67,16 +71,14 @@ class Model:
 
         self.actionList = {}
 
-        if not requireSwitchAction:
+        if not self.requireSwitching():
             self.turnNumber += 1
-
-        for playerIndex in requireSwitchAction:
-            Switch(self, playerIndex).execute()
-            self.addAction(self.getOpponentIndex(playerIndex), None, -1)
 
         if self.playerList[0].getNumberOfPokemonLeft() == 0:
             self.winner = self.playerList[1]
+            self.loser = self.playerList[0]
             self.gameOver = True
         elif self.playerList[1].getNumberOfPokemonLeft() == 0:
             self.winner = self.playerList[0]
+            self.loser = self.playerList[1]
             self.gameOver = True

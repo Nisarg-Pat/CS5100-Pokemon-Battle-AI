@@ -12,11 +12,14 @@ def move_to_list(s):
         s[i] = reformat(s[i])
     return s
 
+
 def type_to_list(s):
     return move_to_list(s)
 
+
 def reformat(s):
     return s
+
 
 def getMultiplier(attackType, defenseTypes):
     multiplier = 1.0
@@ -28,3 +31,14 @@ def getMultiplier(attackType, defenseTypes):
         multiplier = multiplier * float(df[defenseType])
     # print(df)
     return multiplier
+
+
+def multiplierLine(multiplier):
+    if multiplier == 0.0:
+        return "It Does Not Affect."
+    elif multiplier < 1.0:
+        return "It's Not Very Effective."
+    elif multiplier > 1.0:
+        return "It's Super Effective"
+    else:
+        return ""

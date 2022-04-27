@@ -1,3 +1,6 @@
+import util
+
+
 class Player:
 
     def __init__(self, name, pokemonList):
@@ -29,9 +32,21 @@ class Player:
 
     def performAction(self, action, actionIndex, opponentPokemon):
         if action == "MOVE":
-            self.getCurrentPokemon().performMove(self.getCurrentPokemon().moves[actionIndex], opponentPokemon)
+            multiplier, damage = self.getCurrentPokemon().performMove(self.getCurrentPokemon().moves[actionIndex],
+                                                                      opponentPokemon)
+            print()
+            print(self.getCurrentPokemon().name + " used " + self.getCurrentPokemon().moves[actionIndex].name)
+            if multiplier != 1.0:
+                print(util.multiplierLine(multiplier))
+            print(opponentPokemon.name + " took " + str(damage) + " damage. Remaining Health: " + str(
+                opponentPokemon.remainingHP) + "/" + str(opponentPokemon.hp))
+            if opponentPokemon.remainingHP == 0:
+                print(opponentPokemon.name + " Fainted!!")
+
         elif action == "SWITCH":
             self.currentPokemonIndex = actionIndex - 1
+            print()
+            print(self.name + " switched Pokemon to " + self.getCurrentPokemon().name)
 
     def getNumberOfPokemonLeft(self):
         count = 0
