@@ -1,3 +1,6 @@
+from Model.Action import Action
+
+
 class Switch:
     def __init__(self, model, agentIndex):
         self.model = model
@@ -7,7 +10,7 @@ class Switch:
         switchList = self.model.playerList[self.agentIndex].getSwitchPokemonList()
         if len(switchList) == 0:
             print("No other pokemon left to switch.")
-            return
+            return None
 
         print("Pokemon List:")
         selectionList = {}
@@ -16,13 +19,13 @@ class Switch:
         for index in switchList:
             print(str(index) + "." + str(switchList[index].name))
             selectionList[str(index)] = index
-            # lowerCaseMove = move.name.lower()
             selectionList[switchList[index].name.lower()] = index
         inp = input("Select one of the Pokemon: ")
         inp = inp.lower()
         while inp not in selectionList:
             inp = input("Please Select a Pokemon: ")
         if inp == "back":
-            return
+            return None
         pokemonIndex = selectionList[inp]
-        self.model.addAction(self.agentIndex, "SWITCH", pokemonIndex)
+        return (Action.SWITCH, pokemonIndex)
+

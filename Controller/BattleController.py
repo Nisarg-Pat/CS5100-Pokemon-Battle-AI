@@ -1,6 +1,9 @@
 import util
+from AI.Agents import ManualAgent, RandomAgent
 from Controller.Attack import Attack
 from Controller.Switch import Switch
+from Model.Action import Action
+from Model.AgentEnum import AgentEnum
 
 
 class BattleController:
@@ -18,28 +21,16 @@ class BattleController:
         while not self.model.isGameOver():
             playerIndex = self.model.getCurrentPlayerIndex()
             print("Turn " + str(self.model.turnNumber) + " Player: " + self.model.playerList[playerIndex].name)
-            if not self.model.requireSwitching():
-                print("Your Current Pokemon: " + str(self.model.playerList[playerIndex].getCurrentPokemon()))
-                print("Opponent's Current Pokemon: " +
-                      str(self.model.playerList[self.model.getOpponentIndex(playerIndex)].getCurrentPokemon()))
-                print()
 
-                inp = input("Select one of the following: 1.Attack 2.Switch 3.Info: ")
-                inp = inp.lower()
-                while inp not in util.selections:
-                    inp = input("Select one of the following: 1.Attack 2.Switch 3.Info: ")
-                if util.selections[inp] == 'A':
-                    Attack(self.model, playerIndex).execute()
-                elif util.selections[inp] == 'S':
-                    Switch(self.model, playerIndex).execute()
-                elif util.selections[inp] == 'Q':
-                    return
-            else:
-                if self.model.playerList[playerIndex].getCurrentPokemon().remainingHP == 0:
-                    Switch(self.model, playerIndex).execute()
-                else:
-                    self.model.addAction(playerIndex, None, -1)
-
+            if self.model.playerList[playerIndex].agentType == AgentEnum.ManualAgent:
+                action = ManualAgent(playerIndex).getAction(self.model)
+                if action is not None:
+                    self.model.addAction(playerIndex, action)
+            elif self.model.playerList[playerIndex].agentType == AgentEnum.RandomAgent:
+                action = RandomAgent(playerIndex).getAction(self.model)
+                if action is not None:
+                    self.model.addAction(playerIndex, action)
+            print(self.model.actionList)
             print()
 
         if self.model.isGameOver():

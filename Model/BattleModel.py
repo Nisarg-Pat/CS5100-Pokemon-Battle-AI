@@ -1,4 +1,5 @@
 from Controller.Switch import Switch
+from Model.Action import Action
 
 
 class Model:
@@ -15,8 +16,8 @@ class Model:
     def isGameOver(self):
         return self.gameOver
 
-    def addAction(self, playerIndex, action, actionIndex):
-        self.actionList[playerIndex] = (action, actionIndex)
+    def addAction(self, playerIndex, action):
+        self.actionList[playerIndex] = action
         self.turn = self.getOpponentIndex(self.turn)
         if len(self.actionList) == 2:
             self.performActions()
@@ -40,10 +41,10 @@ class Model:
         countMove = 0
         requireSwitchAction = {}
         for playerIndex in self.actionList:
-            action, actionIndex = self.actionList[playerIndex]
-            if action == "SWITCH":
+            (action, actionIndex) = self.actionList[playerIndex]
+            if action == Action.SWITCH:
                 self.playerList[playerIndex].performAction(action, actionIndex, None)
-            elif action == "MOVE":
+            elif action == Action.ATTACK:
                 countMove += 1
             currentPokemon[playerIndex] = self.playerList[playerIndex].getCurrentPokemon()
         if countMove == 2:
@@ -63,7 +64,7 @@ class Model:
         elif countMove == 1:
             for playerIndex in self.actionList:
                 action, actionIndex = self.actionList[playerIndex]
-                if action == "MOVE":
+                if action == Action.ATTACK:
                     self.playerList[playerIndex].performAction(action, actionIndex,
                                                                currentPokemon[self.getOpponentIndex(playerIndex)])
                     if currentPokemon[self.getOpponentIndex(playerIndex)] == 0:
@@ -82,3 +83,15 @@ class Model:
             self.winner = self.playerList[0]
             self.loser = self.playerList[1]
             self.gameOver = True
+
+    def getLegalActions(self, playerIndex):
+        actions = []
+        if self.requireSwitching():
+            if self.playerList[playerIndex].getCurrentPokemon().remainingHP == 0:
+                actions = self.playerList[playerIndex].getPossibleSwitchActions()
+            else:
+                actions = [(Action.NONE, -1)]
+        else:
+            actions = self.playerList[playerIndex].getPossibleActions()
+        print(actions)
+        return actions

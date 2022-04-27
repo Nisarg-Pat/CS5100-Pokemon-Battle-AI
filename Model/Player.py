@@ -1,12 +1,14 @@
 import util
+from Model.Action import Action
 
 
 class Player:
 
-    def __init__(self, name, pokemonList):
+    def __init__(self, name, pokemonList, agent):
         self.name = name
         self.pokemonList = pokemonList
         self.currentPokemonIndex = 0
+        self.agentType = agent
 
     def getCurrentPokemon(self):
         return self.pokemonList[self.currentPokemonIndex]
@@ -23,15 +25,28 @@ class Player:
 
     def getPossibleActions(self):
         actionList = []
-        for move in self.getCurrentPokemon().getMoves():
-            actionList.append(move)
+        for action in self.getPossibleAttackActions():
+            actionList.append(action)
+        for action in self.getPossibleSwitchActions():
+            actionList.append(action)
+        return actionList
+
+    def getPossibleSwitchActions(self):
+        actionList = []
         for i in range(len(self.pokemonList)):
             if i != self.currentPokemonIndex and self.pokemonList[i].remainingHP > 0:
-                actionList.append("Pokemon " + str(i))
-        print(actionList)
+                actionList.append((Action.SWITCH, i+1))
+        return actionList
+
+    def getPossibleAttackActions(self):
+        actionList = []
+        for i in range(len(self.getCurrentPokemon().getMoves())):
+            actionList.append((Action.ATTACK, i+1))
+        return actionList
 
     def performAction(self, action, actionIndex, opponentPokemon):
-        if action == "MOVE":
+        actionIndex-=1
+        if action == Action.ATTACK:
             multiplier, damage = self.getCurrentPokemon().performMove(self.getCurrentPokemon().moves[actionIndex],
                                                                       opponentPokemon)
             print()
@@ -43,8 +58,8 @@ class Player:
             if opponentPokemon.remainingHP == 0:
                 print(opponentPokemon.name + " Fainted!!")
 
-        elif action == "SWITCH":
-            self.currentPokemonIndex = actionIndex - 1
+        elif action == Action.SWITCH:
+            self.currentPokemonIndex = actionIndex
             print()
             print(self.name + " switched Pokemon to " + self.getCurrentPokemon().name)
 
