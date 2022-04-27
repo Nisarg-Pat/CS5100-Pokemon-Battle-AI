@@ -1,5 +1,10 @@
 import pandas
 
+import Data
+from Model.AgentEnum import AgentEnum
+from Model.BattleModel import Model
+from Model.Player import Player
+
 selections = {"1": "A", "a": "A", "attack": "A", "2": "S", "s": "S", "switch": "S", "3": "I", "i": "I", "info": "I",
               "quit": "Q"}
 
@@ -42,3 +47,17 @@ def multiplierLine(multiplier):
         return "It's Super Effective"
     else:
         return ""
+
+
+def generateModel(numPokemon, agentTypes, showPrints):
+    numPlayers = 2
+    players = []
+    playerNames = ["Red", "Blue"]
+
+    for i in range(numPlayers):
+        pokemonList = []
+        for j in range(numPokemon):
+            pokemon = Data.selectRandomPokemonBetween(450, 600)
+            pokemonList.append(pokemon)
+        players.append(Player(playerNames[i], pokemonList, agentTypes[i]))
+    return Model(players, showPrints)

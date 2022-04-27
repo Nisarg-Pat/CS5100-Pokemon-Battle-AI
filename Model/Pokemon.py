@@ -24,6 +24,12 @@ class Pokemon:
 
         self.remainingHP = self.hp
 
+    def copy(self):
+        newPokemon = Pokemon(self.df)
+        newPokemon.remainingHP = self.remainingHP
+        newPokemon.moves = self.moves
+        return newPokemon
+
     def getMoves(self):
         return self.moves
 

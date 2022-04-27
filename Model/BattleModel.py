@@ -1,10 +1,12 @@
 from Controller.Switch import Switch
 from Model.Action import Action
+from Model.Player import Player
 
 
 class Model:
 
-    def __init__(self, player):
+    def __init__(self, player, showPrints = True):
+        self.showPrints = showPrints
         self.playerList = player
         self.gameOver = False
         self.turnNumber = 1
@@ -12,6 +14,21 @@ class Model:
         self.actionList = {}
         self.winner = None
         self.loser = None
+
+    def copy(self):
+        playerList = []
+        for player in self.playerList:
+            playerList.append(player.copy())
+        copyModel = Model(playerList, False)
+        copyModel.gameOver = self.gameOver
+        copyModel.turnNumber = self.turnNumber
+        copyModel.turn = self.turn
+        copyModel.winner = self.winner
+        copyModel.loser = self.loser
+        copyModel.actionList = {}
+        for index in self.actionList:
+            copyModel.actionList[index] = self.actionList[index]
+        return copyModel
 
     def isGameOver(self):
         return self.gameOver
@@ -43,21 +60,21 @@ class Model:
         for playerIndex in self.actionList:
             (action, actionIndex) = self.actionList[playerIndex]
             if action == Action.SWITCH:
-                self.playerList[playerIndex].performAction(action, actionIndex, None)
+                self.playerList[playerIndex].performAction(action, actionIndex, None, self.showPrints)
             elif action == Action.ATTACK:
                 countMove += 1
             currentPokemon[playerIndex] = self.playerList[playerIndex].getCurrentPokemon()
         if countMove == 2:
             if currentPokemon[0].speed >= currentPokemon[1].speed:
-                self.playerList[0].performAction(self.actionList[0][0], self.actionList[0][1], currentPokemon[1])
+                self.playerList[0].performAction(self.actionList[0][0], self.actionList[0][1], currentPokemon[1], self.showPrints)
                 if currentPokemon[1].remainingHP > 0:
-                    self.playerList[1].performAction(self.actionList[1][0], self.actionList[1][1], currentPokemon[0])
+                    self.playerList[1].performAction(self.actionList[1][0], self.actionList[1][1], currentPokemon[0], self.showPrints)
                 else:
                     requireSwitchAction[1] = True
             else:
-                self.playerList[1].performAction(self.actionList[1][0], self.actionList[1][1], currentPokemon[0])
+                self.playerList[1].performAction(self.actionList[1][0], self.actionList[1][1], currentPokemon[0], self.showPrints)
                 if currentPokemon[0].remainingHP > 0:
-                    self.playerList[0].performAction(self.actionList[0][0], self.actionList[0][1], currentPokemon[1])
+                    self.playerList[0].performAction(self.actionList[0][0], self.actionList[0][1], currentPokemon[1], self.showPrints)
                 else:
                     requireSwitchAction[0] = True
 
@@ -66,7 +83,7 @@ class Model:
                 action, actionIndex = self.actionList[playerIndex]
                 if action == Action.ATTACK:
                     self.playerList[playerIndex].performAction(action, actionIndex,
-                                                               currentPokemon[self.getOpponentIndex(playerIndex)])
+                                                               currentPokemon[self.getOpponentIndex(playerIndex)], self.showPrints)
                     if currentPokemon[self.getOpponentIndex(playerIndex)] == 0:
                         requireSwitchAction[self.getOpponentIndex(playerIndex)] = True
 
@@ -85,7 +102,8 @@ class Model:
             self.gameOver = True
 
     def getLegalActions(self, playerIndex):
-        actions = []
+        if self.isGameOver():
+            return []
         if self.requireSwitching():
             if self.playerList[playerIndex].getCurrentPokemon().remainingHP == 0:
                 actions = self.playerList[playerIndex].getPossibleSwitchActions()
@@ -93,5 +111,9 @@ class Model:
                 actions = [(Action.NONE, -1)]
         else:
             actions = self.playerList[playerIndex].getPossibleActions()
-        # print(actions)
         return actions
+
+    def generateSuccessor(self, agentIndex, action):
+        copyModel = self.copy()
+        copyModel.addAction(agentIndex, action)
+        return copyModel
