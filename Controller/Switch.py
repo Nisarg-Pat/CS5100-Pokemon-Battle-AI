@@ -11,16 +11,17 @@ class Switch:
 
         print("Pokemon List:")
         selectionList = {}
-        selectionList['back'] = -1
+        if self.model.playerList[self.agentIndex].getCurrentPokemon().remainingHP > 0:
+            selectionList['back'] = -1
         for index in switchList:
             print(str(index) + "." + str(switchList[index].name))
             selectionList[str(index)] = index
             # lowerCaseMove = move.name.lower()
             selectionList[switchList[index].name.lower()] = index
-        inp = input("Select one of the Pokemon or type Back: ")
+        inp = input("Select one of the Pokemon: ")
         inp = inp.lower()
         while inp not in selectionList:
-            inp = input("Please enter a valid move number or enter 'Back': ")
+            inp = input("Please Select a Pokemon: ")
         if inp == "back":
             return
         pokemonIndex = selectionList[inp]
