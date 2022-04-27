@@ -9,7 +9,7 @@ from Model.Player import Player
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    numGames = 100
+    numGames = 20
     x = [i + 1 for i in range(numGames)]
     y = [0 for i in range(numGames)]
     count = 0

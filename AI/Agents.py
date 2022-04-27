@@ -14,6 +14,7 @@ class Agent:
     def getAction(self, model):
         return None
 
+
 class ManualAgent(Agent):
     def getAction(self, model):
         if not model.requireSwitching():
@@ -38,44 +39,58 @@ class ManualAgent(Agent):
             else:
                 return (Action.NONE, -1)
 
+
 class RandomAgent(Agent):
     def getAction(self, model):
         actions = model.getLegalActions(self.index)
         choice = random.choice(actions)
         return choice
 
+
+class RandomAgentAttackOnly(Agent):
+    def getAction(self, model):
+        actions = model.getLegalActions(self.index)
+        newActionList = []
+        for action in actions:
+            actionType, actionIndex = action
+            if actionType == Action.ATTACK:
+                newActionList.append(action)
+        if len(newActionList) > 0:
+            choice = random.choice(newActionList)
+        else:
+            choice = random.choice(actions)
+        return choice
+
+
 class MinimaxAgent(Agent):
 
-    actionSequence = []
-
     def evaluationFunction(self, model):
-        tot = 0.0
+        tot1 = 0.0
+        tot2 = 0.0
         for i in range(0, len(model.playerList)):
             if i == self.index:
                 for pokemon in model.playerList[i].pokemonList:
-                    tot -= 1 - (pokemon.hp - pokemon.remainingHP)/pokemon.hp
+                    tot1 += (pokemon.hp - pokemon.remainingHP)
             else:
                 for pokemon in model.playerList[i].pokemonList:
-                    tot += 1 - (pokemon.hp - pokemon.remainingHP)/pokemon.hp
+                    tot2 += (pokemon.hp - pokemon.remainingHP)
         # print(tot)
-        print(self.actionSequence)
-        return tot
+        # print(str(self.actionSequence) +" "+str(tot1)+" "+str(tot2))
+        return tot2 - tot1
 
     def getAction(self, model):
         legalActions = model.getLegalActions(self.index)
         maxScore = float("-inf")
         move = None
         for action in legalActions:
-            self.actionSequence.append(action)
             # print(action)
             successorModel = model.generateSuccessor(self.index, action)
             # print(successorModel)
             score = self.minValue(successorModel, successorModel.getOpponentIndex(self.index), 0)
+            print(score)
             if score > maxScore:
                 maxScore = score
                 move = action
-            self.actionSequence.remove(action)
-        print(maxScore)
         return move
 
     def minValue(self, model, agentIndex, depth):
@@ -85,23 +100,78 @@ class MinimaxAgent(Agent):
         legalMoves = model.getLegalActions(agentIndex)
         minScore = float("inf")
         for action in legalMoves:
-            self.actionSequence.append(action)
             # print(action)
             successorModel = model.generateSuccessor(agentIndex, action)
             # print(successorModel)
-            minScore = min(minScore, self.maxValue(successorModel, successorModel.getOpponentIndex(agentIndex), depth + 1))
-            self.actionSequence.remove(action)
+            minScore = min(minScore,
+                           self.maxValue(successorModel, successorModel.getOpponentIndex(agentIndex), depth + 1))
         return minScore
 
     def maxValue(self, model, agentIndex, depth):
         # print("In MaxValue")
-        if model.isGameOver() or depth == 1:
+        if model.isGameOver() or depth == 2:
             return self.evaluationFunction(model)
         legalMoves = model.getLegalActions(agentIndex)
         maxScore = float("-inf")
         for action in legalMoves:
-            self.actionSequence.append(action)
             successorModel = model.generateSuccessor(agentIndex, action)
             maxScore = max(maxScore, self.minValue(successorModel, successorModel.getOpponentIndex(agentIndex), depth))
-            self.actionSequence.remove(action)
+        return maxScore
+
+
+class Expectimax(Agent):
+
+    def evaluationFunction(self, model):
+        tot1 = 0.0
+        tot2 = 0.0
+        for i in range(0, len(model.playerList)):
+            if i == self.index:
+                for pokemon in model.playerList[i].pokemonList:
+                    tot1 += (pokemon.hp - pokemon.remainingHP)
+            else:
+                for pokemon in model.playerList[i].pokemonList:
+                    tot2 += (pokemon.hp - pokemon.remainingHP)
+        # print(tot)
+        # print(str(self.actionSequence) +" "+str(tot1)+" "+str(tot2))
+        return tot2 - tot1
+
+    def getAction(self, model):
+        legalActions = model.getLegalActions(self.index)
+        maxScore = float("-inf")
+        move = None
+        for action in legalActions:
+            # print(action)
+            successorModel = model.generateSuccessor(self.index, action)
+            # print(successorModel)
+            score = self.minValue(successorModel, successorModel.getOpponentIndex(self.index), 0)
+            print(score)
+            if score > maxScore:
+                maxScore = score
+                move = action
+        return move
+
+    def minValue(self, model, agentIndex, depth):
+        # print("In minValue")
+        if model.isGameOver():
+            return self.evaluationFunction(model)
+        legalMoves = model.getLegalActions(agentIndex)
+        avg = 0.0
+        prob = 1.0 / (len(legalMoves))
+        minScore = float("inf")
+        for action in legalMoves:
+            # print(action)
+            successorModel = model.generateSuccessor(agentIndex, action)
+            # print(successorModel)
+            avg = avg + prob * self.maxValue(successorModel, successorModel.getOpponentIndex(agentIndex), depth + 1)
+        return minScore
+
+    def maxValue(self, model, agentIndex, depth):
+        # print("In MaxValue")
+        if model.isGameOver() or depth == 2:
+            return self.evaluationFunction(model)
+        legalMoves = model.getLegalActions(agentIndex)
+        maxScore = float("-inf")
+        for action in legalMoves:
+            successorModel = model.generateSuccessor(agentIndex, action)
+            maxScore = max(maxScore, self.minValue(successorModel, successorModel.getOpponentIndex(agentIndex), depth))
         return maxScore

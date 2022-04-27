@@ -5,7 +5,9 @@ import util
 
 
 class Pokemon:
-    def __init__(self, df):
+    def __init__(self, df=None):
+        if df is None:
+            return
         self.df = df
         self.name = df["Name"]
         self.type = util.type_to_list(df["Types"])
@@ -25,9 +27,19 @@ class Pokemon:
         self.remainingHP = self.hp
 
     def copy(self):
-        newPokemon = Pokemon(self.df)
-        newPokemon.remainingHP = self.remainingHP
+        newPokemon = Pokemon()
+        newPokemon.df = self.df
+        newPokemon.name = self.name
+        newPokemon.type = self.type
+        newPokemon.hp = self.hp
+        newPokemon.attack = self.attack
+        newPokemon.defense = self.defense
+        newPokemon.special_attack = self.special_attack
+        newPokemon.special_defense = self.special_defense
+        newPokemon.speed = self.speed
         newPokemon.moves = self.moves
+        newPokemon.allMovesList = self.allMovesList
+        newPokemon.remainingHP = self.remainingHP
         return newPokemon
 
     def getMoves(self):

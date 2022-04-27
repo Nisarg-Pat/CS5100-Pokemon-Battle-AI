@@ -1,4 +1,7 @@
+from AI import Agents
+
+
 class AgentEnum:
-    ManualAgent = "Manual"
-    RandomAgent = "Random"
-    MinimaxAgent = "MinimaxAgent"
+    ManualAgent = Agents.ManualAgent
+    RandomAgent = Agents.RandomAgent
+    MinimaxAgent = Agents.MinimaxAgent

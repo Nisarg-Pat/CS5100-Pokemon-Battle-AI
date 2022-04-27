@@ -37,7 +37,7 @@ def selectRandomPokemonBetween(low, high):
     pokemonList = pokemonList[pokemonList["Total"] >= low]
     pokemonList = pokemonList[pokemonList["Total"] <= high]
     df = pokemonList.iloc[random.randint(0, len(pokemonList) - 1)]
-    pokemon = Pokemon(df)
+    pokemon = Pokemon(df.to_dict())
     selectRandomAttackingMoves(pokemon)
     return pokemon
 
