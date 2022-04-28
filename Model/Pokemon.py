@@ -46,6 +46,10 @@ class Pokemon:
         return self.moves
 
     def performMove(self, move, opponent):
+        multiplier, damage = self.calcDamage(move, opponent)
+        return multiplier, opponent.damage(damage)
+
+    def calcDamage(self, move, opponent):
         multiplier = util.getMultiplier(move.type, opponent.type)
         if move.category == "Physical":
             ad = float(self.attack) / float(opponent.defense)
@@ -54,11 +58,10 @@ class Pokemon:
         stab = 1.0
         if move.type in self.type:
             stab = 1.5
-        maxDamage = int((0.85*float(move.power)*ad)*multiplier*stab)
-        minDamage = int(0.85*maxDamage)
-        damage = maxDamage
-        # print(str(maxDamage)+" "+str(minDamage))
-        return multiplier, opponent.damage(damage)
+        maxDamage = int((0.85 * float(move.power) * ad) * multiplier * stab)
+        minDamage = int(0.85 * maxDamage)
+        damage = int(0.9*maxDamage)
+        return multiplier, damage
 
     def damage(self, val):
         current = self.remainingHP

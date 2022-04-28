@@ -9,19 +9,24 @@ from Model.Player import Player
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    numGames = 20
+    numGames = 5
     x = [i + 1 for i in range(numGames)]
-    y = [0 for i in range(numGames)]
-    count = 0
-    for i in range(numGames):
-        print(i)
-        numPokemon = 3
-        agentTypes = [AgentEnum.MinimaxAgent, AgentEnum.RandomAgent]
-        model = util.generateModel(numPokemon, agentTypes, False)
-        BattleController(model).start()
-        if model.winner == model.playerList[0]:
-            count += 1
-        y[i] = float(count) / float(x[i])
+    y = {"random": [0 for i in range(numGames)], "minimax": [0 for i in range(numGames)],
+         "expectimax": [0 for i in range(numGames)], "qlearning": [0 for i in range(numGames)]}
+    agents = {"random": AgentEnum.RandomAgent, "minimax": AgentEnum.MinimaxAgent,
+         "expectimax": AgentEnum.Expectimax, "qlearning": AgentEnum.QLearningAgent}
+
+    for q in y:
+        count = 0
+        for i in range(numGames):
+            print(i)
+            numPokemon = 3
+            agentTypes = [AgentEnum.Expectimax(0), AgentEnum.RandomAgent(1)]
+            model = util.generateModel(numPokemon, agentTypes, False)
+            BattleController(model).start()
+            if model.winner == model.playerList[0]:
+                count += 1
+            y[q][i] = float(count) / float(x[i])
         # print(str(x[i])+" "+str(count)+" "+str(y[i]))
-    plt.plot(x, y)
+        plt.plot(x, y[q])
     plt.show()

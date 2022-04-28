@@ -37,6 +37,7 @@ class Model:
         self.actionList[playerIndex] = action
         self.turn = self.getOpponentIndex(self.turn)
         if len(self.actionList) == 2:
+            # print(self.actionList)
             self.performActions()
 
     def getOpponentIndex(self, playerIndex):

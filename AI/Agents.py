@@ -62,20 +62,40 @@ class RandomAgentAttackOnly(Agent):
         return choice
 
 
+class RandomAgentAttackOnlySuperEffective(Agent):
+    def getAction(self, model):
+        actions = model.getLegalActions(self.index)
+        newActionList = {}
+        for action in actions:
+            actionType, actionIndex = action
+            if actionType == Action.ATTACK:
+                pokemon = model.playerList[self.index].getCurrentPokemon()
+                opponent = model.playerList[model.getOpponentIndex(self.index)].getCurrentPokemon()
+                move = pokemon.moves[actionIndex - 1]
+                multiplier, damage = pokemon.calcDamage(move, opponent)
+                newActionList[action] = multiplier
+        if len(newActionList) > 0:
+            maxMultiplier = 0
+            maxAction = None
+            for action in newActionList:
+                if newActionList[action] > maxMultiplier:
+                    maxMultiplier = newActionList[action]
+                    maxAction = action
+            choice = maxAction
+        else:
+            choice = random.choice(actions)
+        return choice
+
+
 class MinimaxAgent(Agent):
 
     def evaluationFunction(self, model):
         tot1 = 0.0
         tot2 = 0.0
-        for i in range(0, len(model.playerList)):
-            if i == self.index:
-                for pokemon in model.playerList[i].pokemonList:
-                    tot1 += (pokemon.hp - pokemon.remainingHP)
-            else:
-                for pokemon in model.playerList[i].pokemonList:
-                    tot2 += (pokemon.hp - pokemon.remainingHP)
-        # print(tot)
-        # print(str(self.actionSequence) +" "+str(tot1)+" "+str(tot2))
+        for pokemon in model.playerList[self.index].pokemonList:
+            tot1 += (pokemon.hp - pokemon.remainingHP)
+        for pokemon in model.playerList[model.getOpponentIndex(self.index)].pokemonList:
+            tot2 += (pokemon.hp - pokemon.remainingHP)
         return tot2 - tot1
 
     def getAction(self, model):
@@ -157,13 +177,12 @@ class Expectimax(Agent):
         legalMoves = model.getLegalActions(agentIndex)
         avg = 0.0
         prob = 1.0 / (len(legalMoves))
-        minScore = float("inf")
         for action in legalMoves:
             # print(action)
             successorModel = model.generateSuccessor(agentIndex, action)
             # print(successorModel)
             avg = avg + prob * self.maxValue(successorModel, successorModel.getOpponentIndex(agentIndex), depth + 1)
-        return minScore
+        return avg
 
     def maxValue(self, model, agentIndex, depth):
         # print("In MaxValue")

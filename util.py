@@ -1,7 +1,6 @@
 import pandas
 
 import Data
-from Model.AgentEnum import AgentEnum
 from Model.BattleModel import Model
 from Model.Player import Player
 

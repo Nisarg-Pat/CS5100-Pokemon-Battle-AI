@@ -24,7 +24,7 @@ class BattleController:
             if self.model.showPrints:
                 print("Turn " + str(self.model.turnNumber) + " Player: " + self.model.playerList[playerIndex].name)
 
-            action = self.model.playerList[playerIndex].agentType(playerIndex).getAction(self.model)
+            action = self.model.playerList[playerIndex].agentType.getAction(self.model)
 
             if action is not None:
                 self.model.addAction(playerIndex, action)
