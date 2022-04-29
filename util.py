@@ -7,6 +7,15 @@ from Model.Player import Player
 selections = {"1": "A", "a": "A", "attack": "A", "2": "S", "s": "S", "switch": "S", "3": "I", "i": "I", "info": "I",
               "quit": "Q"}
 
+type_chart = pandas.read_csv("Data/Type_Chart.csv", sep=',')
+type_chart_dict = {}
+types = list(type_chart.columns)
+types.remove("Attacking")
+for index, row in type_chart.iterrows():
+    type_chart_dict[row["Attacking"]] = {}
+    for column in types:
+        type_chart_dict[row["Attacking"]][column] = float(row[column])
+
 
 def move_to_list(s):
     s = s.replace("[", "").replace("]", "")
@@ -27,12 +36,9 @@ def reformat(s):
 
 def getMultiplier(attackType, defenseTypes):
     multiplier = 1.0
-    type_chart = pandas.read_csv("Data/Type_Chart.csv", sep=',')
     # print(type_chart)
-    df = type_chart[type_chart["Attacking"] == attackType]
     for defenseType in defenseTypes:
-        # print(df[defenseType])
-        multiplier = multiplier * float(df[defenseType])
+        multiplier *= type_chart_dict[attackType][defenseType]
     # print(df)
     return multiplier
 

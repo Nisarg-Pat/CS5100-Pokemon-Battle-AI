@@ -10,7 +10,7 @@ from Model.Player import Player
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    numGames = 10
+    numGames = 1000
     x = [i + 1 for i in range(numGames)]
     y = {"random": [0 for i in range(numGames)], "randomSuper": [0 for i in range(numGames)],
          "minimax": [0 for i in range(numGames)],
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     agents = {"random": Agents.RandomAgent(0), "minimax": Agents.MinimaxAgent(0),
               "randomSuper": Agents.RandomAgentAttackOnlySuperEffective(0),
          "expectimax": Agents.Expectimax(0), "qlearning": QLearning.ApproximateQAgent(0)}
-    finalProb = {}
+    finalProb1 = {}
     legend = []
     for q in y:
         count = 0
@@ -32,7 +32,7 @@ if __name__ == '__main__':
                 count += 1
             y[q][i] = float(count) / float(x[i])
         # print(str(x[i])+" "+str(count)+" "+str(y[i]))
-        finalProb[q] = y[q][numGames-1]
+        finalProb1[q] = y[q][numGames-1]
         plt.plot(x, y[q])
         legend.append(q)
     plt.legend(legend)
@@ -40,4 +40,28 @@ if __name__ == '__main__':
     plt.ylabel("Winning %")
     plt.title("Vs Random Agent")
     plt.show()
-    print(finalProb)
+
+    finalProb2 = {}
+    for q in y:
+        count = 0
+        for i in range(numGames):
+            print(i)
+            numPokemon = 3
+            agentTypes = [agents[q], Agents.RandomAgentAttackOnlySuperEffective(1)]
+            model = util.generateModel(numPokemon, agentTypes, False)
+            BattleController(model).start()
+            if model.winner == model.playerList[0]:
+                count += 1
+            y[q][i] = float(count) / float(x[i])
+        # print(str(x[i])+" "+str(count)+" "+str(y[i]))
+        finalProb2[q] = y[q][numGames-1]
+        plt.plot(x, y[q])
+        legend.append(q)
+    plt.legend(legend)
+    plt.xlabel("Number of games")
+    plt.ylabel("Winning %")
+    plt.title("Vs Agent Using Super Effective Moves")
+    plt.show()
+
+    print(finalProb1)
+    print(finalProb2)

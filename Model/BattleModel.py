@@ -5,7 +5,7 @@ from Model.Player import Player
 
 class Model:
 
-    def __init__(self, player, showPrints = True):
+    def __init__(self, player, showPrints=True):
         self.showPrints = showPrints
         self.playerList = player
         self.gameOver = False
@@ -14,6 +14,7 @@ class Model:
         self.actionList = {}
         self.winner = None
         self.loser = None
+        self.counter = 0
 
     def copy(self):
         playerList = []
@@ -34,6 +35,7 @@ class Model:
         return self.gameOver
 
     def addAction(self, playerIndex, action):
+        self.counter += 1
         self.actionList[playerIndex] = action
         self.turn = self.getOpponentIndex(self.turn)
         if len(self.actionList) == 2:
@@ -67,15 +69,19 @@ class Model:
             currentPokemon[playerIndex] = self.playerList[playerIndex].getCurrentPokemon()
         if countMove == 2:
             if currentPokemon[0].speed >= currentPokemon[1].speed:
-                self.playerList[0].performAction(self.actionList[0][0], self.actionList[0][1], currentPokemon[1], self.showPrints)
+                self.playerList[0].performAction(self.actionList[0][0], self.actionList[0][1], currentPokemon[1],
+                                                 self.showPrints)
                 if currentPokemon[1].remainingHP > 0:
-                    self.playerList[1].performAction(self.actionList[1][0], self.actionList[1][1], currentPokemon[0], self.showPrints)
+                    self.playerList[1].performAction(self.actionList[1][0], self.actionList[1][1], currentPokemon[0],
+                                                     self.showPrints)
                 else:
                     requireSwitchAction[1] = True
             else:
-                self.playerList[1].performAction(self.actionList[1][0], self.actionList[1][1], currentPokemon[0], self.showPrints)
+                self.playerList[1].performAction(self.actionList[1][0], self.actionList[1][1], currentPokemon[0],
+                                                 self.showPrints)
                 if currentPokemon[0].remainingHP > 0:
-                    self.playerList[0].performAction(self.actionList[0][0], self.actionList[0][1], currentPokemon[1], self.showPrints)
+                    self.playerList[0].performAction(self.actionList[0][0], self.actionList[0][1], currentPokemon[1],
+                                                     self.showPrints)
                 else:
                     requireSwitchAction[0] = True
 
@@ -84,7 +90,8 @@ class Model:
                 action, actionIndex = self.actionList[playerIndex]
                 if action == Action.ATTACK:
                     self.playerList[playerIndex].performAction(action, actionIndex,
-                                                               currentPokemon[self.getOpponentIndex(playerIndex)], self.showPrints)
+                                                               currentPokemon[self.getOpponentIndex(playerIndex)],
+                                                               self.showPrints)
                     if currentPokemon[self.getOpponentIndex(playerIndex)] == 0:
                         requireSwitchAction[self.getOpponentIndex(playerIndex)] = True
 
@@ -100,6 +107,8 @@ class Model:
         elif self.playerList[1].getNumberOfPokemonLeft() == 0:
             self.winner = self.playerList[0]
             self.loser = self.playerList[1]
+            self.gameOver = True
+        elif self.counter >= 100:
             self.gameOver = True
 
     def getLegalActions(self, playerIndex):

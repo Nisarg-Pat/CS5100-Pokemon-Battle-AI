@@ -11,7 +11,15 @@ def readPokemonList():
     pokemon_list = pandas.read_csv("Data/Pokemon_Data.csv", sep=';')
     pokemon_list["Total"] = pokemon_list.HP + pokemon_list.Attack + pokemon_list.Defense + pokemon_list[
         "Special Attack"] + pokemon_list["Special Defense"] + pokemon_list.Speed
-    return pokemon_list
+    pokemon_list = pokemon_list[pokemon_list["Total"] >= 450]
+    pokemon_list = pokemon_list[pokemon_list["Total"] <= 600]
+    pokemon_list_dict = {}
+    columns = list(pokemon_list.columns)
+    for index, row in pokemon_list.iterrows():
+        pokemon_list_dict[row["Name"]] = {}
+        for column in columns:
+            pokemon_list_dict[row["Name"]][column] = row[column]
+    return pokemon_list_dict
 
 
 def readMoveList():
@@ -19,41 +27,24 @@ def readMoveList():
     for i in range(0, len(move_list)):
         s = move_list.loc[i, "Name"]
         move_list.loc[i, "Name"] = util.reformat(s)
-    return move_list
+    move_list_dict = {}
+    columns = list(move_list.columns)
+    for index, row in move_list.iterrows():
+        move_list_dict[row["Name"]] = {}
+        for column in columns:
+            move_list_dict[row["Name"]][column] = row[column]
+    return move_list_dict
 
 
 moves_list = readMoveList()
 pokemon_list = readPokemonList()
 
 
-def selectRandomPokemon():
-    df = pokemon_list.iloc[random.randint(0, len(pokemon_list))]
-    print(df)
-    return Pokemon(df)
-
-
 def selectRandomPokemonBetween(low, high):
-    pokemonList = pokemon_list
-    pokemonList = pokemonList[pokemonList["Total"] >= low]
-    pokemonList = pokemonList[pokemonList["Total"] <= high]
-    df = pokemonList.iloc[random.randint(0, len(pokemonList) - 1)]
-    pokemon = Pokemon(df.to_dict())
+    df = random.choice(list(pokemon_list))
+    pokemon = Pokemon(pokemon_list[df])
     selectRandomAttackingMoves(pokemon)
     return pokemon
-
-
-def selectAllPokemon():
-    pokemonList = pokemon_list
-    pokemonList = pokemonList[pokemonList["Total"] >= 450]
-    pokemonList = pokemonList[pokemonList["Total"] <= 600]
-    for i in range(0, len(pokemonList)):
-        pokemon = Pokemon(pokemonList.iloc[i])
-        moves = util.move_to_list(pokemon.df["Moves"])
-        for i in range(0, len(moves)):
-            if moves[i] != pokemon.allMovesList[i].name:
-                return
-        selectRandomAttackingMoves(pokemon)
-    print("Completed")
 
 
 def selectRandomMoves(pokemon):
@@ -65,10 +56,9 @@ def selectRandomAttackingMoves(pokemon):
     for move in pokemon.allMovesList:
         if move.power!="None":
             possibleMoves.append(move)
-    # pokemon.moves = random.sample(possibleMoves, min(4, len(possibleMoves)))
     pokemon.moves = random.sample(possibleMoves, 4)
 
 def getMove(move):
-    df = moves_list[moves_list["Name"] == move].iloc[0]
+    df = moves_list[move]
     newMove = Move(df)
     return newMove

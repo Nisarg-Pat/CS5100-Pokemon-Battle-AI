@@ -1,4 +1,6 @@
+import pandas
+
 import Data
 import util
 
-Data.selectAllPokemon()
+print(util.getMultiplier("Electric", ["Water", "Flying"]))

@@ -1,12 +1,13 @@
 import random
 
 import util
+from AI import Agents, EvaluationFunctions
 from AI.Agents import MinimaxAgent
 from Model.Action import Action
 
 
 class ApproximateQAgent:
-    def __init__(self, index, discount=0.7, alpha=0.5, epsilon=0.3):
+    def __init__(self, index, numgames=1000, discount=0.7, alpha=0.5, epsilon=0.3):
         self.index = index
         self.discount = discount
         self.alpha = alpha
@@ -18,6 +19,7 @@ class ApproximateQAgent:
         self.weights = {}
         for feature in self.features:
             self.weights[feature] = 0
+        self.numgames = numgames
         self.learn()
 
     def extractFeatures(self, model, action):
@@ -27,29 +29,29 @@ class ApproximateQAgent:
         opponentPokemon = copyModel.playerList[copyModel.getOpponentIndex(self.index)].getCurrentPokemon()
         actionType, actionIndex = action
 
-        features["PokemonHP"] = currentPokemon.hp/1000
-        features["PokemonRemainingHP"] = currentPokemon.remainingHP/1000
-        features["OpponentHP"] = opponentPokemon.hp/1000
-        features["OpponentRemainingHP"] = opponentPokemon.remainingHP/1000
-        features["PokemonAttack"] = currentPokemon.attack/1000
-        features["PokemonDefense"] = currentPokemon.defense/1000
-        features["PokemonSpecialAttack"] = currentPokemon.special_attack/1000
-        features["PokemonSpecialDefense"] = currentPokemon.special_defense/1000
-        features["PokemonSpeed"] = currentPokemon.speed/1000
-        features["OpponentAttack"] = opponentPokemon.attack/1000
-        features["OpponentDefense"] = opponentPokemon.defense/1000
-        features["OpponentSpecialAttack"] = opponentPokemon.special_attack/1000
-        features["OpponentSpecialDefense"] = opponentPokemon.special_defense/1000
-        features["OpponentSpeed"] = opponentPokemon.speed/1000
-        features["RemainingPokemon"] = copyModel.playerList[self.index].getNumberOfPokemonLeft()/1000
+        features["PokemonHP"] = currentPokemon.hp / 1000
+        features["PokemonRemainingHP"] = currentPokemon.remainingHP / 1000
+        features["OpponentHP"] = opponentPokemon.hp / 1000
+        features["OpponentRemainingHP"] = opponentPokemon.remainingHP / 1000
+        features["PokemonAttack"] = currentPokemon.attack / 1000
+        features["PokemonDefense"] = currentPokemon.defense / 1000
+        features["PokemonSpecialAttack"] = currentPokemon.special_attack / 1000
+        features["PokemonSpecialDefense"] = currentPokemon.special_defense / 1000
+        features["PokemonSpeed"] = currentPokemon.speed / 1000
+        features["OpponentAttack"] = opponentPokemon.attack / 1000
+        features["OpponentDefense"] = opponentPokemon.defense / 1000
+        features["OpponentSpecialAttack"] = opponentPokemon.special_attack / 1000
+        features["OpponentSpecialDefense"] = opponentPokemon.special_defense / 1000
+        features["OpponentSpeed"] = opponentPokemon.speed / 1000
+        features["RemainingPokemon"] = copyModel.playerList[self.index].getNumberOfPokemonLeft() / 1000
         features["RemainingOpponent"] = copyModel.playerList[
-            copyModel.getOpponentIndex(self.index)].getNumberOfPokemonLeft()/1000
+                                            copyModel.getOpponentIndex(self.index)].getNumberOfPokemonLeft() / 1000
 
         if actionType == Action.ATTACK:
             move = currentPokemon.moves[actionIndex - 1]
             multiplier, damage = currentPokemon.calcDamage(move, opponentPokemon)
-            features["Multiplier"] = multiplier/1000
-            features["Damage"] = damage/1000
+            features["Multiplier"] = multiplier / 1000
+            features["Damage"] = damage / 1000
         return features
 
     def calcReward(self, model):
@@ -59,26 +61,9 @@ class ApproximateQAgent:
             return 100
         else:
             return -100
-        # prevTot1 = 0.0
-        # prevTot2 = 0.0
-        # # # for pokemon in prevModel.playerList[self.index].pokemonList:
-        # # #     prevTot1 += float(pokemon.hp - pokemon.remainingHP) / float(pokemon.hp)
-        # for pokemon in prevModel.playerList[prevModel.getOpponentIndex(self.index)].pokemonList:
-        #     prevTot2 += float(pokemon.hp - pokemon.remainingHP)
-        # prevTot = (prevTot2 - prevTot1)
-        # tot1 = 0.0
-        # tot2 = 0.0
-        # # # for pokemon in model.playerList[self.index].pokemonList:
-        # # #     tot1 += float(pokemon.hp - pokemon.remainingHP) / float(pokemon.hp)
-        # for pokemon in model.playerList[model.getOpponentIndex(self.index)].pokemonList:
-        #     tot2 += float(pokemon.hp - pokemon.remainingHP)
-        # tot = (tot2 - tot1)
-        # return tot - prevTot
 
     def learn(self):
-        numGames = 20
-        # random.seed("Nisarg19")
-        for i in range(numGames):
+        for i in range(self.numgames):
             print("Learning Game: " + str(i))
             numPokemon = 3
             from Model.AgentEnum import AgentEnum

@@ -1,6 +1,7 @@
 import random
 
 import util
+from AI import EvaluationFunctions
 from Controller.Attack import Attack
 from Controller.Switch import Switch
 from Model.Action import Action
@@ -89,14 +90,10 @@ class RandomAgentAttackOnlySuperEffective(Agent):
 
 class MinimaxAgent(Agent):
 
-    def evaluationFunction(self, model):
-        tot1 = 0.0
-        tot2 = 0.0
-        for pokemon in model.playerList[self.index].pokemonList:
-            tot1 += (pokemon.hp - pokemon.remainingHP)
-        for pokemon in model.playerList[model.getOpponentIndex(self.index)].pokemonList:
-            tot2 += (pokemon.hp - pokemon.remainingHP)
-        return tot2 - tot1
+    def __init__(self, index, evaluationFunction=EvaluationFunctions.DamageEvaluationFunction):
+
+        super().__init__(index)
+        self.evaluationFunction = evaluationFunction
 
     def getAction(self, model):
         legalActions = model.getLegalActions(self.index)
@@ -107,7 +104,6 @@ class MinimaxAgent(Agent):
             successorModel = model.generateSuccessor(self.index, action)
             # print(successorModel)
             score = self.minValue(successorModel, successorModel.getOpponentIndex(self.index), 0)
-            print(score)
             if score > maxScore:
                 maxScore = score
                 move = action
@@ -116,7 +112,7 @@ class MinimaxAgent(Agent):
     def minValue(self, model, agentIndex, depth):
         # print("In minValue")
         if model.isGameOver():
-            return self.evaluationFunction(model)
+            return self.evaluationFunction().evaluate(model, self.index)
         legalMoves = model.getLegalActions(agentIndex)
         minScore = float("inf")
         for action in legalMoves:
@@ -130,7 +126,7 @@ class MinimaxAgent(Agent):
     def maxValue(self, model, agentIndex, depth):
         # print("In MaxValue")
         if model.isGameOver() or depth == 2:
-            return self.evaluationFunction(model)
+            return self.evaluationFunction().evaluate(model, self.index)
         legalMoves = model.getLegalActions(agentIndex)
         maxScore = float("-inf")
         for action in legalMoves:
@@ -141,19 +137,11 @@ class MinimaxAgent(Agent):
 
 class Expectimax(Agent):
 
-    def evaluationFunction(self, model):
-        tot1 = 0.0
-        tot2 = 0.0
-        for i in range(0, len(model.playerList)):
-            if i == self.index:
-                for pokemon in model.playerList[i].pokemonList:
-                    tot1 += (pokemon.hp - pokemon.remainingHP)
-            else:
-                for pokemon in model.playerList[i].pokemonList:
-                    tot2 += (pokemon.hp - pokemon.remainingHP)
-        # print(tot)
-        # print(str(self.actionSequence) +" "+str(tot1)+" "+str(tot2))
-        return tot2 - tot1
+    def __init__(self, index, evaluationFunction=EvaluationFunctions.DamageEvaluationFunction, depth=2):
+
+        super().__init__(index)
+        self.evaluationFunction = evaluationFunction
+        self.depth = depth
 
     def getAction(self, model):
         legalActions = model.getLegalActions(self.index)
@@ -164,7 +152,6 @@ class Expectimax(Agent):
             successorModel = model.generateSuccessor(self.index, action)
             # print(successorModel)
             score = self.minValue(successorModel, successorModel.getOpponentIndex(self.index), 0)
-            print(score)
             if score > maxScore:
                 maxScore = score
                 move = action
@@ -173,7 +160,7 @@ class Expectimax(Agent):
     def minValue(self, model, agentIndex, depth):
         # print("In minValue")
         if model.isGameOver():
-            return self.evaluationFunction(model)
+            return self.evaluationFunction().evaluate(model, self.index)
         legalMoves = model.getLegalActions(agentIndex)
         avg = 0.0
         prob = 1.0 / (len(legalMoves))
@@ -186,8 +173,8 @@ class Expectimax(Agent):
 
     def maxValue(self, model, agentIndex, depth):
         # print("In MaxValue")
-        if model.isGameOver() or depth == 2:
-            return self.evaluationFunction(model)
+        if model.isGameOver() or depth == self.depth:
+            return self.evaluationFunction().evaluate(model, self.index)
         legalMoves = model.getLegalActions(agentIndex)
         maxScore = float("-inf")
         for action in legalMoves:

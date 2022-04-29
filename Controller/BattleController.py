@@ -18,8 +18,9 @@ class BattleController:
             print(self.model.playerList[0])
             print(self.model.playerList[1].name + "'s Team")
             print(self.model.playerList[1])
-
+        counter = 0
         while not self.model.isGameOver():
+            counter += 1
             playerIndex = self.model.getCurrentPlayerIndex()
             if self.model.showPrints:
                 print("Turn " + str(self.model.turnNumber) + " Player: " + self.model.playerList[playerIndex].name)
@@ -32,7 +33,13 @@ class BattleController:
             if self.model.showPrints:
                 print()
 
+            if counter >= 1000:
+                self.model.gameOver = True
+
         if self.model.isGameOver():
             if self.model.showPrints:
-                print(self.model.loser.name + " is out of usable Pokemon.")
-                print(self.model.winner.name + " wins!!!")
+                if self.model.winner is not None:
+                    print(self.model.loser.name + " is out of usable Pokemon.")
+                    print(self.model.winner.name + " wins!!!")
+                else:
+                    print("Game Ended in a draw")
