@@ -11,6 +11,6 @@ from Model.Player import Player
 
 if __name__ == '__main__':
     numPokemon = 3
-    agentTypes = [QLearning.ApproximateQAgent(0), Agents.RandomAgent(1)]
+    agentTypes = [Agents.ManualAgent(0), Agents.RandomAgent(1)]
     model = util.generateModel(numPokemon, agentTypes, True)
     BattleController(model).start()
